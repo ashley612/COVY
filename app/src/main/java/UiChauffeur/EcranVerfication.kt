@@ -1,0 +1,383 @@
+package com.example.covy.UiChauffeur
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+// ✅ Imports pour le ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.covy.viewmodel.OTPVerification
+
+// ==========================================
+// PALETTE OFFICIELLE COVY
+// ==========================================
+val CovyForestGreen3 = Color(0xFF084D38)
+val CovyTextDark3 = Color(0xFF111827)
+val CovyTextMuted3 = Color(0xFF6B7280)
+val CovyLightGreenBg3 = Color(0xFFE8F5EE)
+val CovyBorderCard3 = Color(0xFFE5E7EB)
+val CovyBadgeTextGreen3 = Color(0xFF0F766E)
+val CovyBackground3 = Color(0xFFFFFFFF)
+
+@Composable
+fun VerifyNumberOtpScreen(
+    // ✅ Utilise TON ViewModel OTPVerification
+    viewModel: OTPVerification = viewModel(),
+    phoneNumberMasked: String = "+225 07 •• •• •• 67.",
+    onNavigateBack: () -> Unit = {},
+    onVerifyCodeClick: (String) -> Unit = {},
+    onResendCodeClick: () -> Unit = {},
+    onEditNumberClick: () -> Unit = {}
+) {
+    Scaffold(
+        containerColor = CovyBackground3,
+        topBar = {
+            SmsChauffeurCovy(
+                stepText = "04 / 30",
+                onBackClicked = onNavigateBack
+            )
+        },
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Bouton principal "Vérifier le code"
+                Button(
+                    onClick = {
+                        viewModel.verifierCode {
+                            onVerifyCodeClick(viewModel.state.code)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CovyForestGreen3),
+                    shape = RoundedCornerShape(28.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = "Vérifier le code",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Action secondaire "Modifier le numéro"
+                Text(
+                    text = "Modifier le numéro",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = CovyForestGreen3,
+                    modifier = Modifier
+                        .clickable { onEditNumberClick() }
+                        .padding(vertical = 6.dp, horizontal = 12.dp)
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp, vertical = 12.dp)
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 1. Libellé de section
+            Text(
+                text = "ACCÈS · VÉRIFICATION",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = CovyBadgeTextGreen3,
+                letterSpacing = 0.5.sp
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 2. Titre principal
+            Text(
+                text = "Vérifiez votre numéro",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = CovyTextDark3,
+                lineHeight = 34.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 3. Sous-titre
+            Text(
+                text = "Code envoyé au $phoneNumberMasked",
+                fontSize = 14.sp,
+                color = CovyTextMuted3,
+                lineHeight = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 4. Encart informatif
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = CovyLightGreenBg3),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ChatBubbleOutline,
+                        contentDescription = "SMS",
+                        tint = CovyBadgeTextGreen3,
+                        modifier = Modifier.size(28.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = "Consultez vos SMS",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = CovyTextDark3
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "Saisissez les 6 chiffres reçus pour continuer.",
+                        fontSize = 13.sp,
+                        color = CovyTextMuted3
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // 5. Code de vérification
+            Text(
+                text = "Code de vérification",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = CovyTextDark3
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // ✅ Utilise viewModel.state.code et viewModel.onCodeChange
+            OtpCodeInputBoxes(
+                code = viewModel.state.code,
+                onCodeChange = { viewModel.onCodeChange(it) }
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // 6. Renvoyer le code
+            Text(
+                text = "Vous n'avez pas reçu de code ?",
+                fontSize = 13.sp,
+                color = CovyTextMuted3
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Renvoyer le code",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = CovyForestGreen3,
+                modifier = Modifier
+                    .clickable {
+                        viewModel.renvoyerCode()
+                        onResendCodeClick()
+                    }
+                    .padding(vertical = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ✅ Message d'erreur depuis viewModel.state.errorMessage
+            viewModel.state.errorMessage?.let { error ->
+                Text(
+                    text = error,
+                    fontSize = 13.sp,
+                    color = Color(0xFFEF4444),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+// ==========================================
+// COMPOSANT DES CELLULES DE CODE OTP
+// ==========================================
+@Composable
+fun OtpCodeInputBoxes(
+    code: String,
+    onCodeChange: (String) -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            for (index in 0 until 6) {
+                val digit = code.getOrNull(index)?.toString() ?: ""
+                val isFocused = code.length == index
+
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = Color.White,
+                    border = androidx.compose.foundation.BorderStroke(
+                        width = 1.dp,
+                        color = if (isFocused) CovyForestGreen3 else CovyBorderCard3
+                    ),
+                    modifier = Modifier
+                        .size(width = 48.dp, height = 58.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = digit,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = CovyTextDark3,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+
+        BasicTextField(
+            value = code,
+            onValueChange = { input ->
+                if (input.all { it.isDigit() } && input.length <= 6) {
+                    onCodeChange(input)
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(58.dp)
+                .padding(horizontal = 4.dp),
+            decorationBox = { }
+        )
+    }
+}
+
+// ==========================================
+// COMPOSANT EN-TÊTE
+// ==========================================
+@Composable
+fun SmsChauffeurCovy(stepText: String, onBackClicked: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(
+            onClick = onBackClicked,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Retour",
+                tint = CovyTextDark3
+            )
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(CovyLightGreenBg3),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "🌱", fontSize = 16.sp)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Covy",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = CovyForestGreen3
+            )
+        }
+
+        Surface(
+            color = Color(0xFFF3F4F6),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = stepText,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = CovyTextMuted3,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+fun PreviewVerifyNumberOtpScreen() {
+    VerifyNumberOtpScreen()
+}
