@@ -1,7 +1,6 @@
 package com.example.covy.UiChauffeur
 
-
-
+// ✅ Nouveaux imports pour le ViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -60,39 +59,33 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.covy.model.DocumentType
+import com.example.covy.viewmodel.InscriptionViewModel
 
 // ==========================================
 // PALETTE DE COULEURS OFFICIELLE COVY
 // ==========================================
-val CovyForestGreen1 = Color(0xFF084D38)     // Bouton CTA principal, barre de progression active
-val CovyTextDark1 = Color(0xFF111827)        // Titre "Prenez le volant", textes principaux
-val CovyTextMuted1 = Color(0xFF6B7280)       // Sous-titres, libellés secondaires
-val CovyLightGreenBg1 = Color(0xFFE8F5EE)    // Badge d'en-tête, fond sélectionné CNI
-val CovyBorderGreen1 = Color(0xFFBBE5D0)     // Bordures d'encarts de téléversement
-val CovyInputBg1 = Color(0xFFF9FAFB)         // Arrière-plan des champs de saisie
-val CovyInputBorder1 = Color(0xFFE5E7EB)      // Bordure des inputs inactifs
-val CovyBadgeTextGreen1 = Color(0xFF0F766E)  // Texte des badges "Obligatoire" / "Chauffeur"
+val CovyForestGreen1 = Color(0xFF084D38)
+val CovyTextDark1 = Color(0xFF111827)
+val CovyTextMuted1 = Color(0xFF6B7280)
+val CovyLightGreenBg1 = Color(0xFFE8F5EE)
+val CovyBorderGreen1 = Color(0xFFBBE5D0)
+val CovyInputBg1 = Color(0xFFF9FAFB)
+val CovyInputBorder1 = Color(0xFFE5E7EB)
+val CovyBadgeTextGreen1 = Color(0xFF0F766E)
 val CovyBackground1 = Color(0xFFFFFFFF)
-
-enum class DocumentType { CNI, PASSEPORT }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EcranInscriptionChauffeur(
+    // ✅ Ajout du ViewModel
+    viewModel: InscriptionViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onContinueToVehicle: () -> Unit = {}
 ) {
-    var firstName by remember { mutableStateOf("Karim") }
-    var lastName by remember { mutableStateOf("Kouassi") }
-    var phone by remember { mutableStateOf("07 88 12 34 56") }
-    var password by remember { mutableStateOf("1234567890") }
-    var selectedDocType by remember { mutableStateOf(DocumentType.CNI) }
-    var docNumber by remember { mutableStateOf("CI-00389281-22") }
-    var licenseNumber by remember { mutableStateOf("CI-B-204867") }
-
-    // État pour la catégorie de permis
-    var licenseCategory by remember { mutableStateOf("B (Véhicules légers / Berlines)") }
     var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
+
     val categoriesList = listOf(
         "B (Véhicules légers / Berlines)",
         "A (Motos & Deux-roues)",
@@ -100,7 +93,6 @@ fun EcranInscriptionChauffeur(
         "D (Transport en commun / Minibus)",
         "BC (Véhicules utilitaires & Berlines)"
     )
-
 
     Scaffold(
         containerColor = CovyBackground1,
@@ -121,7 +113,12 @@ fun EcranInscriptionChauffeur(
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     Button(
-                        onClick = onContinueToVehicle,
+                        // ✅ Utilise le ViewModel pour valider et continuer
+                        onClick = {
+                            viewModel.continuerVersVehicule {
+                                onContinueToVehicle()
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = CovyForestGreen1),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier
@@ -264,12 +261,18 @@ fun EcranInscriptionChauffeur(
                 Column(modifier = Modifier.weight(1f)) {
                     InscriLabel(text = "Prénom", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
-                    InscriptionTopBar(value = firstName, onValueChange = { firstName = it })
+                    InscriptionTopBar(
+                        value = viewModel.firstName,                  // ✅ ViewModel
+                        onValueChange = { viewModel.onFirstNameChange(it) }
+                    )
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     InscriLabel(text = "Nom", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
-                    InscriptionTopBar(value = lastName, onValueChange = { lastName = it })
+                    InscriptionTopBar(
+                        value = viewModel.lastName,                   // ✅ ViewModel
+                        onValueChange = { viewModel.onLastNameChange(it) }
+                    )
                 }
             }
 
@@ -279,8 +282,8 @@ fun EcranInscriptionChauffeur(
             InscriLabel(text = "Téléphone", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
-                value = phone,
-                onValueChange = { phone = it },
+                value = viewModel.phone,                                  // ✅ ViewModel
+                onValueChange = { viewModel.onPhoneChange(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = defaultTextFieldColors(),
@@ -323,8 +326,8 @@ fun EcranInscriptionChauffeur(
             InscriLabel(text = "Mot de passe", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = viewModel.password,                               // ✅ ViewModel
+                onValueChange = { viewModel.onPasswordChange(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 visualTransformation = PasswordVisualTransformation(),
@@ -342,7 +345,7 @@ fun EcranInscriptionChauffeur(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 7. Pièce d'identité officielle (Obligatoire)
+            // 7. Pièce d'identité officielle
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -377,16 +380,16 @@ fun EcranInscriptionChauffeur(
                 DocTypeTabItem(
                     label = "Carte CNI",
                     icon = Icons.Default.Badge,
-                    isSelected = selectedDocType == DocumentType.CNI,
+                    isSelected = viewModel.selectedDocType == DocumentType.CNI,  // ✅ ViewModel
                     modifier = Modifier.weight(1f),
-                    onClick = { selectedDocType = DocumentType.CNI }
+                    onClick = { viewModel.onDocTypeChange(DocumentType.CNI) }
                 )
                 DocTypeTabItem(
                     label = "Passeport",
                     icon = Icons.Default.Public,
-                    isSelected = selectedDocType == DocumentType.PASSEPORT,
+                    isSelected = viewModel.selectedDocType == DocumentType.PASSEPORT,  // ✅ ViewModel
                     modifier = Modifier.weight(1f),
-                    onClick = { selectedDocType = DocumentType.PASSEPORT }
+                    onClick = { viewModel.onDocTypeChange(DocumentType.PASSEPORT) }
                 )
             }
 
@@ -394,8 +397,8 @@ fun EcranInscriptionChauffeur(
 
             // Numéro de la pièce d'identité
             OutlinedTextField(
-                value = docNumber,
-                onValueChange = { docNumber = it },
+                value = viewModel.docNumber,                              // ✅ ViewModel
+                onValueChange = { viewModel.onDocNumberChange(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = defaultTextFieldColors(),
@@ -424,7 +427,10 @@ fun EcranInscriptionChauffeur(
             // 8. Permis de conduire
             InscriLabel(text = "Numéro du permis de conduire", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
-            InscriptionTopBar(value = licenseNumber, onValueChange = { licenseNumber = it })
+            InscriptionTopBar(
+                value = viewModel.licenseNumber,                          // ✅ ViewModel
+                onValueChange = { viewModel.onLicenseNumberChange(it) }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -437,7 +443,7 @@ fun EcranInscriptionChauffeur(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = licenseCategory,
+                    value = viewModel.licenseCategory,                    // ✅ ViewModel
                     onValueChange = {},
                     readOnly = true,
                     modifier = Modifier
@@ -462,12 +468,12 @@ fun EcranInscriptionChauffeur(
                                 Text(
                                     text = category,
                                     fontSize = 14.sp,
-                                    fontWeight = if (category == licenseCategory) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (category == licenseCategory) CovyForestGreen1 else CovyTextDark1
+                                    fontWeight = if (category == viewModel.licenseCategory) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (category == viewModel.licenseCategory) CovyForestGreen1 else CovyTextDark1
                                 )
                             },
                             onClick = {
-                                licenseCategory = category
+                                viewModel.onLicenseCategoryChange(category)
                                 isCategoryDropdownExpanded = false
                             },
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
@@ -477,6 +483,17 @@ fun EcranInscriptionChauffeur(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Message d'erreur éventuel
+            viewModel.errorMessage?.let { error ->
+                Text(
+                    text = error,
+                    fontSize = 13.sp,
+                    color = Color(0xFFEF4444),
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
             // Note informative obligatoire
             Text(
@@ -490,12 +507,8 @@ fun EcranInscriptionChauffeur(
     }
 }
 
-
-
-
-
 // ==========================================
-// COMPOSANTS RÉUTILISABLES
+// COMPOSANTS RÉUTILISABLES (inchangés)
 // ==========================================
 
 @Composable
@@ -519,7 +532,6 @@ fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
             )
         }
 
-        // Logo Covy
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -528,7 +540,6 @@ fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
                     .background(CovyLightGreenBg1),
                 contentAlignment = Alignment.Center
             ) {
-                // Symbole stylisé Covy
                 Text(text = "🌱", fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -540,7 +551,6 @@ fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
             )
         }
 
-        // Indicateur d'étape (ex: 12 / 30)
         Surface(
             color = Color(0xFFF3F4F6),
             shape = RoundedCornerShape(16.dp)
@@ -557,7 +567,7 @@ fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
 }
 
 @Composable
-fun  InscriLabel(text: String, isRequired: Boolean) {
+fun InscriLabel(text: String, isRequired: Boolean) {
     Row {
         Text(
             text = text,
@@ -577,7 +587,7 @@ fun  InscriLabel(text: String, isRequired: Boolean) {
 }
 
 @Composable
-fun  InscriptionTopBar(
+fun InscriptionTopBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier

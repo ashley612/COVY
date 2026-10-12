@@ -1,7 +1,5 @@
 package com.example.covy.UiChauffeur
 
-
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,19 +35,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// ✅ Nouveaux imports pour le ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.covy.viewmodel.DriverProfileViewModel
+
 // ==========================================
-// PALETTE OFFICIELLE COVY (IDENTIQUE FLUX)
+// PALETTE OFFICIELLE COVY
 // ==========================================
-val CovyForestGreen2 = Color(0xFF084D38)     // Liens d'action, vert signature Covy
-val CovyTextDark2 = Color(0xFF111827)        // Titre "Vous êtes chauffeur Covy ?", "Chauffeur"
-val CovyTextMuted2 = Color(0xFF6B7280)       // Sous-titres, descriptions
-val CovyLightGreenBg2 = Color(0xFFE8F5EE)    // Fond icône voiture & badges
-val CovyBorderCard2 = Color(0xFFE5E7EB)      // Bordure carte profil
-val CovyBadgeTextGreen2 = Color(0xFF0F766E)  // Libellé "INSCRIPTION · PROFIL"
+val CovyForestGreen2 = Color(0xFF084D38)
+val CovyTextDark2 = Color(0xFF111827)
+val CovyTextMuted2 = Color(0xFF6B7280)
+val CovyLightGreenBg2 = Color(0xFFE8F5EE)
+val CovyBorderCard2 = Color(0xFFE5E7EB)
+val CovyBadgeTextGreen2 = Color(0xFF0F766E)
 val CovyBackground2 = Color(0xFFFFFFFF)
 
 @Composable
 fun DriverProfileSelectionScreen(
+    // ✅ Ajout du ViewModel en premier paramètre
+    viewModel: DriverProfileViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onRegisterAsDriverClick: () -> Unit = {},
     onLoginClick: () -> Unit = {}
@@ -63,7 +67,6 @@ fun DriverProfileSelectionScreen(
             )
         },
         bottomBar = {
-            // Lien de connexion en bas
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,7 +80,12 @@ fun DriverProfileSelectionScreen(
                     fontWeight = FontWeight.SemiBold,
                     color = CovyForestGreen2,
                     modifier = Modifier
-                        .clickable { onLoginClick() }
+                        // ✅ Utilise le ViewModel pour se connecter
+                        .clickable {
+                            viewModel.seConnecter {
+                                onLoginClick()
+                            }
+                        }
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
@@ -91,7 +99,6 @@ fun DriverProfileSelectionScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 1. Libellé de section "INSCRIPTION · PROFIL"
             Text(
                 text = "INSCRIPTION · PROFIL",
                 fontSize = 12.sp,
@@ -102,7 +109,6 @@ fun DriverProfileSelectionScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 2. Titre principal
             Text(
                 text = "Vous êtes chauffeur Covy ?",
                 fontSize = 28.sp,
@@ -113,7 +119,6 @@ fun DriverProfileSelectionScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 3. Sous-titre descriptif
             Text(
                 text = "Ce parcours est réservé aux chauffeurs Covy. Créez votre compte pour transporter des passagers.",
                 fontSize = 14.sp,
@@ -124,9 +129,13 @@ fun DriverProfileSelectionScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 4. Carte interactive "Chauffeur"
             Surface(
-                onClick = onRegisterAsDriverClick,
+                // ✅ Utilise le ViewModel pour confirmer le profil
+                onClick = {
+                    viewModel.confirmerProfilChauffeur {
+                        onRegisterAsDriverClick()
+                    }
+                },
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
                 border = androidx.compose.foundation.BorderStroke(1.dp, CovyBorderCard2),
@@ -138,7 +147,6 @@ fun DriverProfileSelectionScreen(
                         .fillMaxWidth()
                         .padding(24.dp)
                 ) {
-                    // Icône voiture dans squircle vert menthe
                     Box(
                         modifier = Modifier
                             .size(56.dp)
@@ -156,7 +164,6 @@ fun DriverProfileSelectionScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Titre du profil
                     Text(
                         text = "Chauffeur",
                         fontSize = 20.sp,
@@ -166,7 +173,6 @@ fun DriverProfileSelectionScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Description du profil
                     Text(
                         text = "Je transporte des passagers vers leurs campus.",
                         fontSize = 14.sp,
@@ -176,10 +182,7 @@ fun DriverProfileSelectionScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Lien d'action avec flèche
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "M'inscrire comme chauffeur",
                             fontSize = 15.sp,
@@ -225,7 +228,6 @@ fun TopAppBarCovy(stepText: String, onBackClicked: () -> Unit) {
             )
         }
 
-        // Logo Covy
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -245,7 +247,6 @@ fun TopAppBarCovy(stepText: String, onBackClicked: () -> Unit) {
             )
         }
 
-        // Indicateur d'étape (03 / 30)
         Surface(
             color = Color(0xFFF3F4F6),
             shape = RoundedCornerShape(16.dp)

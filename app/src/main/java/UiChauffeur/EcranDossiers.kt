@@ -1,11 +1,22 @@
 package com.example.covy.UiChauffeur
 
-
-
+// ✅ Nouveaux imports pour le ViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,8 +24,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,36 +42,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.covy.viewmodel.VehiculeViewModel
 
 // ==========================================
-// PALETTE OFFICIELLE COVY (IDENTIQUE ÉTAPE 1)
+// PALETTE OFFICIELLE COVY
 // ==========================================
-val CovyForestGreen7: Color= Color(0xFF084D38)     // Bouton CTA principal, barre de progression 100%
-val CovyTextDark7 = Color(0xFF111827)        // Titres & textes principaux
-val CovyTextMuted7 = Color(0xFF6B7280)       // Libellés secondaires, sous-titres
-val CovyLightGreenBg7 = Color(0xFFE8F5EE)    // Fond des cartes documents ajoutés & badges
-val CovyBorderGreen7 = Color(0xFFBBE5D0)     // Bordures des cartes de documents
-val CovyInputBg7 = Color(0xFFF9FAFB)         // Fond des textfields
-val CovyInputBorder7 = Color(0xFFE5E7EB)      // Bordure des textfields inactifs
-val CovyBadgeTextGreen7 = Color(0xFF0F766E)  // Texte des badges d'étape
+val CovyForestGreen7: Color = Color(0xFF084D38)
+val CovyTextDark7 = Color(0xFF111827)
+val CovyTextMuted7 = Color(0xFF6B7280)
+val CovyLightGreenBg7 = Color(0xFFE8F5EE)
+val CovyBorderGreen7 = Color(0xFFBBE5D0)
+val CovyInputBg7 = Color(0xFFF9FAFB)
+val CovyInputBorder7 = Color(0xFFE5E7EB)
+val CovyBadgeTextGreen7 = Color(0xFF0F766E)
 val CovyBackground7 = Color(0xFFFFFFFF)
 
 @Composable
 fun VehicleAndDocumentsScreen(
+    // ✅ Ajout du ViewModel
+    viewModel: VehiculeViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onSubmitForReview: () -> Unit = {}
 ) {
-    // États des champs du véhicule
-    var carModel by remember { mutableStateOf("Toyota Corolla") }
-    var carYear by remember { mutableStateOf("2021") }
-    var carColor by remember { mutableStateOf("Blanche") }
-    var licensePlate by remember { mutableStateOf("AB 1234 CD") }
-
-    // Noms des fichiers téléversés
-    var driverLicenseFile by remember { mutableStateOf("permis-karim.pdf") }
-    var insuranceFile by remember { mutableStateOf("assurance-2026.pdf") }
-    var technicalInspectionFile by remember { mutableStateOf("visite-technique.pdf") }
-
     Scaffold(
         containerColor = CovyBackground7,
         topBar = {
@@ -72,7 +84,12 @@ fun VehicleAndDocumentsScreen(
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     Button(
-                        onClick = onSubmitForReview,
+                        // ✅ Utilise le ViewModel pour valider et envoyer
+                        onClick = {
+                            viewModel.envoyerPourExamen {
+                                onSubmitForReview()
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = CovyForestGreen7),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier
@@ -150,7 +167,7 @@ fun VehicleAndDocumentsScreen(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Barre de progression 100% (Étape 2 complétée)
+            // Barre de progression 100%
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -172,13 +189,13 @@ fun VehicleAndDocumentsScreen(
             FormLabel(text = "Marque et modèle", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             CovyTextField(
-                value = carModel,
-                onValueChange = { carModel = it }
+                value = viewModel.carModel,                             // ✅ ViewModel
+                onValueChange = { viewModel.onCarModelChange(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 5. Année et Couleur (côte à côte)
+            // 5. Année et Couleur
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -187,16 +204,16 @@ fun VehicleAndDocumentsScreen(
                     FormLabel(text = "Année", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
                     CovyTextField(
-                        value = carYear,
-                        onValueChange = { carYear = it }
+                        value = viewModel.carYear,                       // ✅ ViewModel
+                        onValueChange = { viewModel.onCarYearChange(it) }
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     FormLabel(text = "Couleur", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
                     CovyTextField(
-                        value = carColor,
-                        onValueChange = { carColor = it }
+                        value = viewModel.carColor,                      // ✅ ViewModel
+                        onValueChange = { viewModel.onCarColorChange(it) }
                     )
                 }
             }
@@ -207,41 +224,52 @@ fun VehicleAndDocumentsScreen(
             FormLabel(text = "Immatriculation", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             CovyTextField(
-                value = licensePlate,
-                onValueChange = { licensePlate = it }
+                value = viewModel.licensePlate,                          // ✅ ViewModel
+                onValueChange = { viewModel.onLicensePlateChange(it) }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 7. Permis de conduire (Fichier PDF)
+            // 7. Permis de conduire
             FormLabel(text = "Permis de conduire", isRequired = true)
             Spacer(modifier = Modifier.height(8.dp))
             UploadedDocumentCard(
-                fileName = driverLicenseFile,
+                fileName = viewModel.driverLicenseFile ?: "Aucun fichier",  // ✅ ViewModel
                 onReplaceClick = { /* Action pour changer le document */ }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 8. Assurance (Fichier PDF)
+            // 8. Assurance
             FormLabel(text = "Assurance", isRequired = true)
             Spacer(modifier = Modifier.height(8.dp))
             UploadedDocumentCard(
-                fileName = insuranceFile,
+                fileName = viewModel.insuranceFile ?: "Aucun fichier",     // ✅ ViewModel
                 onReplaceClick = { /* Action pour changer le document */ }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 9. Visite technique (Fichier PDF)
+            // 9. Visite technique
             FormLabel(text = "Visite technique", isRequired = true)
             Spacer(modifier = Modifier.height(8.dp))
             UploadedDocumentCard(
-                fileName = technicalInspectionFile,
+                fileName = viewModel.technicalInspectionFile ?: "Aucun fichier",  // ✅ ViewModel
                 onReplaceClick = { /* Action pour changer le document */ }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Message d'erreur éventuel
+            viewModel.errorMessage?.let { error ->
+                Text(
+                    text = error,
+                    fontSize = 13.sp,
+                    color = Color(0xFFEF4444),
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
             // Note d'examen obligatoire
             Text(
@@ -270,11 +298,9 @@ fun UploadedDocumentCard(
             .clip(RoundedCornerShape(12.dp))
             .border(1.dp, CovyBorderGreen7, RoundedCornerShape(12.dp))
             .background(CovyLightGreenBg7.copy(alpha = 0.5f))
-
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icône de document
         Box(
             modifier = Modifier
                 .size(40.dp)
@@ -293,19 +319,15 @@ fun UploadedDocumentCard(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Nom du fichier & action de remplacement
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = fileName,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = CovyTextDark7
-
             )
             Spacer(modifier = Modifier.height(2.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Document ajouté · ",
                     fontSize = 12.sp,
@@ -348,7 +370,6 @@ fun ProgressTopAppBar(stepText: String, onBackClicked: () -> Unit) {
             )
         }
 
-        // Logo Covy
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -368,7 +389,6 @@ fun ProgressTopAppBar(stepText: String, onBackClicked: () -> Unit) {
             )
         }
 
-        // Compteur d'étape (ex: 13 / 30)
         Surface(
             color = Color(0xFFF3F4F6),
             shape = RoundedCornerShape(16.dp)

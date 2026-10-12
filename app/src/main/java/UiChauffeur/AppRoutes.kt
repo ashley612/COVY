@@ -13,10 +13,10 @@ object RouteConnexion          // LoginScreen (02 / 30)
 object RouteRecuperation       // ResetPasswordAccountScreen (03 / 30)
 
 @Serializable
-object RouteVerificationSms    // VerifyNumberOtpScreen (04 / 30)
+object RouteVerification   // VerifyNumberOtpScreen (04 / 30)
 
 @Serializable
-object RouteProfilChoix        // DriverProfileSelectionScreen (03 / 30)
+object RouteProfilChauffeur        // DriverProfileSelectionScreen (03 / 30)
 
 @Serializable
 object RouteInscription        // EcranInscriptionChauffeur (12 / 30)
