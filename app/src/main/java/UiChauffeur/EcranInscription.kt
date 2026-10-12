@@ -1,9 +1,23 @@
-package UiChauffeur
+package com.example.covy.UiChauffeur
+
 
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +35,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -31,7 +46,11 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -103,7 +122,7 @@ fun EcranInscriptionChauffeur(
                 ) {
                     Button(
                         onClick = onContinueToVehicle,
-                        colors = ButtonDefaults.buttonColors(containerColor = CovyForestGreen7),
+                        colors = ButtonDefaults.buttonColors(containerColor = CovyForestGreen1),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -192,14 +211,14 @@ fun EcranInscriptionChauffeur(
                     Box(
                         modifier = Modifier
                             .size(14.dp)
-                            .border(2.dp, CovyForestGreen7, CircleShape),
+                            .border(2.dp, CovyForestGreen1, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(CircleShape)
-                                .background(CovyForestGreen7)
+                                .background(CovyForestGreen1)
                         )
                     }
                     Spacer(modifier = Modifier.width(6.dp))
@@ -207,7 +226,7 @@ fun EcranInscriptionChauffeur(
                         text = "Identité · Étape 1 sur 2",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = CovyForestGreen7
+                        color = CovyForestGreen1
                     )
                 }
                 Text(
@@ -231,7 +250,7 @@ fun EcranInscriptionChauffeur(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .fillMaxHeight()
-                        .background(CovyForestGreen7)
+                        .background(CovyForestGreen1)
                 )
             }
 
@@ -245,12 +264,12 @@ fun EcranInscriptionChauffeur(
                 Column(modifier = Modifier.weight(1f)) {
                     InscriLabel(text = "Prénom", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
-                    CovyTextInscription(value = firstName, onValueChange = { firstName = it })
+                    InscriptionTopBar(value = firstName, onValueChange = { firstName = it })
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     InscriLabel(text = "Nom", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
-                    CovyTextInscription(value = lastName, onValueChange = { lastName = it })
+                    InscriptionTopBar(value = lastName, onValueChange = { lastName = it })
                 }
             }
 
@@ -405,7 +424,7 @@ fun EcranInscriptionChauffeur(
             // 8. Permis de conduire
             InscriLabel(text = "Numéro du permis de conduire", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
-            CovyTextInscription(value = licenseNumber, onValueChange = { licenseNumber = it })
+            InscriptionTopBar(value = licenseNumber, onValueChange = { licenseNumber = it })
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -423,7 +442,7 @@ fun EcranInscriptionChauffeur(
                     readOnly = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(),
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     shape = RoundedCornerShape(12.dp),
                     colors = defaultTextFieldColors(),
                     trailingIcon = {
@@ -444,7 +463,7 @@ fun EcranInscriptionChauffeur(
                                     text = category,
                                     fontSize = 14.sp,
                                     fontWeight = if (category == licenseCategory) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (category == licenseCategory) CovyForestGreen7 else CovyTextDark1
+                                    color = if (category == licenseCategory) CovyForestGreen1 else CovyTextDark1
                                 )
                             },
                             onClick = {
@@ -472,10 +491,7 @@ fun EcranInscriptionChauffeur(
 }
 
 
-@Composable
-fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
-    TODO("Not yet implemented")
-}
+
 
 
 // ==========================================
@@ -483,7 +499,7 @@ fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
 // ==========================================
 
 @Composable
-fun  CovyTextInscription(stepText: String, onBackClicked: () -> Unit) {
+fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -520,7 +536,7 @@ fun  CovyTextInscription(stepText: String, onBackClicked: () -> Unit) {
                 text = "Covy",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = CovyForestGreen7
+                color = CovyForestGreen1
             )
         }
 
@@ -561,7 +577,7 @@ fun  InscriLabel(text: String, isRequired: Boolean) {
 }
 
 @Composable
-fun  CovyTextInscription(
+fun  InscriptionTopBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -599,7 +615,7 @@ fun DocTypeTabItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) CovyForestGreen7 else CovyTextMuted1,
+                tint = if (isSelected) CovyForestGreen1 else CovyTextMuted1,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(6.dp))
@@ -607,7 +623,7 @@ fun DocTypeTabItem(
                 text = label,
                 fontSize = 13.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) CovyForestGreen7 else CovyTextMuted1
+                color = if (isSelected) CovyForestGreen1 else CovyTextMuted1
             )
         }
     }
@@ -644,7 +660,7 @@ fun UploadBox(
                 Icon(
                     imageVector = Icons.Default.CameraAlt,
                     contentDescription = null,
-                    tint = CovyForestGreen7,
+                    tint = CovyForestGreen1,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -688,7 +704,7 @@ fun UploadBox(
 fun defaultTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = CovyInputBg1,
     unfocusedContainerColor = CovyInputBg1,
-    focusedBorderColor = CovyForestGreen7,
+    focusedBorderColor = CovyForestGreen1,
     unfocusedBorderColor = CovyInputBorder1,
     focusedTextColor = CovyTextDark1,
     unfocusedTextColor = CovyTextDark1

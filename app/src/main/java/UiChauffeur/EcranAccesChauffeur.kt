@@ -1,16 +1,32 @@
-package UiChauffeur
+package com.example.covy.UiChauffeur
 
 
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +44,7 @@ val CovyForestGreen2 = Color(0xFF084D38)     // Liens d'action, vert signature C
 val CovyTextDark2 = Color(0xFF111827)        // Titre "Vous êtes chauffeur Covy ?", "Chauffeur"
 val CovyTextMuted2 = Color(0xFF6B7280)       // Sous-titres, descriptions
 val CovyLightGreenBg2 = Color(0xFFE8F5EE)    // Fond icône voiture & badges
-val CovyBorderCard = Color(0xFFE5E7EB)      // Bordure carte profil
+val CovyBorderCard2 = Color(0xFFE5E7EB)      // Bordure carte profil
 val CovyBadgeTextGreen2 = Color(0xFF0F766E)  // Libellé "INSCRIPTION · PROFIL"
 val CovyBackground2 = Color(0xFFFFFFFF)
 
@@ -59,7 +75,7 @@ fun DriverProfileSelectionScreen(
                     text = "Déjà inscrit ? Se connecter",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = CovyForestGreen7,
+                    color = CovyForestGreen2,
                     modifier = Modifier
                         .clickable { onLoginClick() }
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -113,7 +129,7 @@ fun DriverProfileSelectionScreen(
                 onClick = onRegisterAsDriverClick,
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
-                border = androidx.compose.foundation.BorderStroke(1.dp, CovyBorderCard4),
+                border = androidx.compose.foundation.BorderStroke(1.dp, CovyBorderCard2),
                 shadowElevation = 0.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -133,7 +149,7 @@ fun DriverProfileSelectionScreen(
                         Icon(
                             imageVector = Icons.Default.DirectionsCar,
                             contentDescription = "Chauffeur",
-                            tint = CovyForestGreen7,
+                            tint = CovyForestGreen2,
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -168,13 +184,13 @@ fun DriverProfileSelectionScreen(
                             text = "M'inscrire comme chauffeur",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = CovyForestGreen7
+                            color = CovyForestGreen2
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = null,
-                            tint = CovyForestGreen7,
+                            tint = CovyForestGreen2,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -225,7 +241,7 @@ fun TopAppBarCovy(stepText: String, onBackClicked: () -> Unit) {
                 text = "Covy",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = CovyForestGreen7
+                color = CovyForestGreen2
             )
         }
 
