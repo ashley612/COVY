@@ -1,6 +1,6 @@
 package com.example.covy.UiChauffeur
 
-// ✅ Nouveaux imports pour le ViewModel
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +40,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -54,37 +56,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.covy.R
 import com.example.covy.model.DocumentType
+import com.example.covy.ui.theme.CovyTheme
 import com.example.covy.viewmodel.InscriptionViewModel
-
-// ==========================================
-// PALETTE DE COULEURS OFFICIELLE COVY
-// ==========================================
-val CovyForestGreen1 = Color(0xFF084D38)
-val CovyTextDark1 = Color(0xFF111827)
-val CovyTextMuted1 = Color(0xFF6B7280)
-val CovyLightGreenBg1 = Color(0xFFE8F5EE)
-val CovyBorderGreen1 = Color(0xFFBBE5D0)
-val CovyInputBg1 = Color(0xFFF9FAFB)
-val CovyInputBorder1 = Color(0xFFE5E7EB)
-val CovyBadgeTextGreen1 = Color(0xFF0F766E)
-val CovyBackground1 = Color(0xFFFFFFFF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EcranInscriptionChauffeur(
-    // ✅ Ajout du ViewModel
     viewModel: InscriptionViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onContinueToVehicle: () -> Unit = {}
 ) {
     var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     val categoriesList = listOf(
         "B (Véhicules légers / Berlines)",
@@ -95,7 +88,7 @@ fun EcranInscriptionChauffeur(
     )
 
     Scaffold(
-        containerColor = CovyBackground1,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             InscriptionTopAppBar(
                 stepText = "12 / 30",
@@ -104,7 +97,7 @@ fun EcranInscriptionChauffeur(
         },
         bottomBar = {
             Surface(
-                color = CovyBackground1,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 8.dp
             ) {
                 Box(
@@ -113,13 +106,12 @@ fun EcranInscriptionChauffeur(
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     Button(
-                        // ✅ Utilise le ViewModel pour valider et continuer
                         onClick = {
                             viewModel.continuerVersVehicule {
                                 onContinueToVehicle()
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = CovyForestGreen1),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -133,13 +125,13 @@ fun EcranInscriptionChauffeur(
                                 text = "Continuer vers le véhicule",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -155,50 +147,50 @@ fun EcranInscriptionChauffeur(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 8.dp)
         ) {
-            // 1. Badge "INSCRIPTION · CHAUFFEUR"
+            // Badge
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .background(CovyLightGreenBg1)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .size(6.dp)
                         .clip(CircleShape)
-                        .background(CovyBadgeTextGreen1)
+                        .background(MaterialTheme.colorScheme.secondary)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "INSCRIPTION · CHAUFFEUR",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CovyBadgeTextGreen1,
+                    color = MaterialTheme.colorScheme.secondary,
                     letterSpacing = 0.5.sp
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 2. Titre principal & sous-titre
+            // Titre & sous-titre
             Text(
                 text = "Prenez le volant",
                 fontSize = 26.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = CovyTextDark1
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Commençons par votre identité et vos documents officiels.",
                 fontSize = 13.sp,
-                color = CovyTextMuted1,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 18.sp
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. Indicateur d'étape
+            // Indicateur d'étape
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -208,14 +200,14 @@ fun EcranInscriptionChauffeur(
                     Box(
                         modifier = Modifier
                             .size(14.dp)
-                            .border(2.dp, CovyForestGreen1, CircleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(CircleShape)
-                                .background(CovyForestGreen1)
+                                .background(MaterialTheme.colorScheme.primary)
                         )
                     }
                     Spacer(modifier = Modifier.width(6.dp))
@@ -223,37 +215,37 @@ fun EcranInscriptionChauffeur(
                         text = "Identité · Étape 1 sur 2",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = CovyForestGreen1
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 Text(
                     text = "Véhicule ensuite",
                     fontSize = 12.sp,
-                    color = CovyTextMuted1
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Ligne de progression (50%)
+            // Barre de progression 50%
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFE5E7EB))
+                    .background(MaterialTheme.colorScheme.outlineVariant)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .fillMaxHeight()
-                        .background(CovyForestGreen1)
+                        .background(MaterialTheme.colorScheme.primary)
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // 4. Prénom et Nom côte à côte
+            // Prénom & Nom
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -262,31 +254,34 @@ fun EcranInscriptionChauffeur(
                     InscriLabel(text = "Prénom", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
                     InscriptionTopBar(
-                        value = viewModel.firstName,                  // ✅ ViewModel
-                        onValueChange = { viewModel.onFirstNameChange(it) }
+                        value = viewModel.firstName,
+                        onValueChange = { viewModel.onFirstNameChange(it) },
+                        placeholder = "Karim"
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     InscriLabel(text = "Nom", isRequired = true)
                     Spacer(modifier = Modifier.height(6.dp))
                     InscriptionTopBar(
-                        value = viewModel.lastName,                   // ✅ ViewModel
-                        onValueChange = { viewModel.onLastNameChange(it) }
+                        value = viewModel.lastName,
+                        onValueChange = { viewModel.onLastNameChange(it) },
+                        placeholder = "Kouassi"
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 5. Téléphone (+225)
+            // Téléphone
             InscriLabel(text = "Téléphone", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
-                value = viewModel.phone,                                  // ✅ ViewModel
+                value = viewModel.phone,
                 onValueChange = { viewModel.onPhoneChange(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = defaultTextFieldColors(),
+                placeholder = { Text("07 88 12 34 56", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp) },
                 leadingIcon = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -298,14 +293,14 @@ fun EcranInscriptionChauffeur(
                             text = "+225",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = CovyTextMuted1
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
                                 .width(1.dp)
                                 .height(20.dp)
-                                .background(CovyInputBorder1)
+                                .background(MaterialTheme.colorScheme.outline)
                         )
                     }
                 },
@@ -313,7 +308,7 @@ fun EcranInscriptionChauffeur(
                     Icon(
                         imageVector = Icons.Default.Phone,
                         contentDescription = null,
-                        tint = CovyTextMuted1,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 },
@@ -322,30 +317,39 @@ fun EcranInscriptionChauffeur(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 6. Mot de passe
+            // Mot de passe
             InscriLabel(text = "Mot de passe", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
-                value = viewModel.password,                               // ✅ ViewModel
+                value = viewModel.password,
                 onValueChange = { viewModel.onPasswordChange(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (isPasswordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
                 colors = defaultTextFieldColors(),
+                placeholder = { Text("••••••••", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp) },
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.VisibilityOff,
-                        contentDescription = "Afficher/Masquer",
-                        tint = CovyTextMuted1,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                        Icon(
+                            imageVector = if (isPasswordVisible)
+                                Icons.Default.Visibility
+                            else
+                                Icons.Default.VisibilityOff,
+                            contentDescription = "Afficher/Masquer",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 },
                 singleLine = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 7. Pièce d'identité officielle
+            // Pièce d'identité
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -353,14 +357,14 @@ fun EcranInscriptionChauffeur(
             ) {
                 InscriLabel(text = "Pièce d'identité officielle", isRequired = true)
                 Surface(
-                    color = CovyLightGreenBg1,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(6.dp)
                 ) {
                     Text(
                         text = "Obligatoire",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = CovyBadgeTextGreen1,
+                        color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                     )
                 }
@@ -373,21 +377,21 @@ fun EcranInscriptionChauffeur(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF3F4F6))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 DocTypeTabItem(
                     label = "Carte CNI",
                     icon = Icons.Default.Badge,
-                    isSelected = viewModel.selectedDocType == DocumentType.CNI,  // ✅ ViewModel
+                    isSelected = viewModel.selectedDocType == DocumentType.CNI,
                     modifier = Modifier.weight(1f),
                     onClick = { viewModel.onDocTypeChange(DocumentType.CNI) }
                 )
                 DocTypeTabItem(
                     label = "Passeport",
                     icon = Icons.Default.Public,
-                    isSelected = viewModel.selectedDocType == DocumentType.PASSEPORT,  // ✅ ViewModel
+                    isSelected = viewModel.selectedDocType == DocumentType.PASSEPORT,
                     modifier = Modifier.weight(1f),
                     onClick = { viewModel.onDocTypeChange(DocumentType.PASSEPORT) }
                 )
@@ -395,18 +399,19 @@ fun EcranInscriptionChauffeur(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Numéro de la pièce d'identité
+            // Numéro de la pièce
             OutlinedTextField(
-                value = viewModel.docNumber,                              // ✅ ViewModel
+                value = viewModel.docNumber,
                 onValueChange = { viewModel.onDocNumberChange(it) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = defaultTextFieldColors(),
+                placeholder = { Text("Ex: CI-00389281-22", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp) },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.CreditCard,
                         contentDescription = null,
-                        tint = CovyTextMuted1,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 },
@@ -415,7 +420,7 @@ fun EcranInscriptionChauffeur(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Encart ajout photo justificatif
+            // Upload photo
             UploadBox(
                 title = "Photo CNI ou Passeport",
                 subtitle = "Recto/Verso lisible ou page passeport",
@@ -424,17 +429,18 @@ fun EcranInscriptionChauffeur(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 8. Permis de conduire
+            // Permis de conduire
             InscriLabel(text = "Numéro du permis de conduire", isRequired = true)
             Spacer(modifier = Modifier.height(6.dp))
             InscriptionTopBar(
-                value = viewModel.licenseNumber,                          // ✅ ViewModel
-                onValueChange = { viewModel.onLicenseNumberChange(it) }
+                value = viewModel.licenseNumber,
+                onValueChange = { viewModel.onLicenseNumberChange(it) },
+                placeholder = "Ex: CI-B-204867"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 9. Catégorie du permis
+            // Catégorie du permis
             InscriLabel(text = "Catégorie du permis", isRequired = true)
             Spacer(modifier = Modifier.height(20.dp))
             ExposedDropdownMenuBox(
@@ -443,7 +449,7 @@ fun EcranInscriptionChauffeur(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = viewModel.licenseCategory,                    // ✅ ViewModel
+                    value = viewModel.licenseCategory,
                     onValueChange = {},
                     readOnly = true,
                     modifier = Modifier
@@ -460,7 +466,7 @@ fun EcranInscriptionChauffeur(
                 ExposedDropdownMenu(
                     expanded = isCategoryDropdownExpanded,
                     onDismissRequest = { isCategoryDropdownExpanded = false },
-                    modifier = Modifier.background(Color.White)
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
                 ) {
                     categoriesList.forEach { category ->
                         DropdownMenuItem(
@@ -469,7 +475,7 @@ fun EcranInscriptionChauffeur(
                                     text = category,
                                     fontSize = 14.sp,
                                     fontWeight = if (category == viewModel.licenseCategory) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (category == viewModel.licenseCategory) CovyForestGreen1 else CovyTextDark1
+                                    color = if (category == viewModel.licenseCategory) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                 )
                             },
                             onClick = {
@@ -484,22 +490,29 @@ fun EcranInscriptionChauffeur(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Message d'erreur éventuel
+            // Message d'erreur
             viewModel.errorMessage?.let { error ->
-                Text(
-                    text = error,
-                    fontSize = 13.sp,
-                    color = Color(0xFFEF4444),
-                    fontWeight = FontWeight.Medium
-                )
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = error,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Note informative obligatoire
+            // Note
             Text(
                 text = "* Champs obligatoires pour la vérification réglementaire",
                 fontSize = 11.sp,
-                color = CovyTextMuted1
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -508,7 +521,7 @@ fun EcranInscriptionChauffeur(
 }
 
 // ==========================================
-// COMPOSANTS RÉUTILISABLES (inchangés)
+// COMPOSANTS
 // ==========================================
 
 @Composable
@@ -528,38 +541,42 @@ fun InscriptionTopAppBar(stepText: String, onBackClicked: () -> Unit) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Retour",
-                tint = CovyTextDark1
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
+        // ✅ Logo Covy (Image au lieu de 🌱)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(CovyLightGreenBg1),
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🌱", fontSize = 16.sp)
+                Image(
+                    painter = painterResource(id = R.drawable.covy_logo),
+                    contentDescription = "Logo Covy",
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Covy",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = CovyForestGreen1
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
         Surface(
-            color = Color(0xFFF3F4F6),
+            color = MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
                 text = stepText,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = CovyTextMuted1,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
             )
         }
@@ -573,14 +590,14 @@ fun InscriLabel(text: String, isRequired: Boolean) {
             text = text,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
-            color = CovyTextDark1
+            color = MaterialTheme.colorScheme.onBackground
         )
         if (isRequired) {
             Text(
                 text = " *",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFEF4444)
+                color = MaterialTheme.colorScheme.error
             )
         }
     }
@@ -590,7 +607,8 @@ fun InscriLabel(text: String, isRequired: Boolean) {
 fun InscriptionTopBar(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    placeholder: String = ""
 ) {
     OutlinedTextField(
         value = value,
@@ -598,6 +616,11 @@ fun InscriptionTopBar(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = defaultTextFieldColors(),
+        placeholder = {
+            if (placeholder.isNotEmpty()) {
+                Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+            }
+        },
         singleLine = true
     )
 }
@@ -613,7 +636,7 @@ fun DocTypeTabItem(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        color = if (isSelected) Color.White else Color.Transparent,
+        color = if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent,
         shadowElevation = if (isSelected) 1.dp else 0.dp,
         modifier = modifier.height(38.dp)
     ) {
@@ -625,7 +648,7 @@ fun DocTypeTabItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) CovyForestGreen1 else CovyTextMuted1,
+                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(6.dp))
@@ -633,7 +656,7 @@ fun DocTypeTabItem(
                 text = label,
                 fontSize = 13.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) CovyForestGreen1 else CovyTextMuted1
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -649,8 +672,8 @@ fun UploadBox(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, CovyBorderGreen1, RoundedCornerShape(12.dp))
-            .background(CovyLightGreenBg1.copy(alpha = 0.35f))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -663,14 +686,14 @@ fun UploadBox(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White)
-                    .border(1.dp, CovyBorderGreen1, RoundedCornerShape(8.dp)),
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.CameraAlt,
                     contentDescription = null,
-                    tint = CovyForestGreen1,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -680,12 +703,12 @@ fun UploadBox(
                     text = title,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CovyTextDark1
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = subtitle,
                     fontSize = 11.sp,
-                    color = CovyTextMuted1
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -694,8 +717,8 @@ fun UploadBox(
             onClick = onAddClick,
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.White,
-                contentColor = CovyTextDark1
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
             ),
             border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
@@ -712,16 +735,18 @@ fun UploadBox(
 
 @Composable
 fun defaultTextFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedContainerColor = CovyInputBg1,
-    unfocusedContainerColor = CovyInputBg1,
-    focusedBorderColor = CovyForestGreen1,
-    unfocusedBorderColor = CovyInputBorder1,
-    focusedTextColor = CovyTextDark1,
-    unfocusedTextColor = CovyTextDark1
+    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
 )
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 fun PreviewEcranInscriptionChauffeur() {
-    EcranInscriptionChauffeur()
+    CovyTheme {
+        EcranInscriptionChauffeur()
+    }
 }

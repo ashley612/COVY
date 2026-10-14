@@ -1,5 +1,7 @@
 package com.example.covy.UiChauffeur
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,37 +32,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// ✅ Nouveaux imports pour le ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.covy.R
+import com.example.covy.ui.theme.CovyTheme
 import com.example.covy.viewmodel.DriverProfileViewModel
-
-// ==========================================
-// PALETTE OFFICIELLE COVY
-// ==========================================
-val CovyForestGreen2 = Color(0xFF084D38)
-val CovyTextDark2 = Color(0xFF111827)
-val CovyTextMuted2 = Color(0xFF6B7280)
-val CovyLightGreenBg2 = Color(0xFFE8F5EE)
-val CovyBorderCard2 = Color(0xFFE5E7EB)
-val CovyBadgeTextGreen2 = Color(0xFF0F766E)
-val CovyBackground2 = Color(0xFFFFFFFF)
 
 @Composable
 fun DriverProfileSelectionScreen(
-    // ✅ Ajout du ViewModel en premier paramètre
     viewModel: DriverProfileViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
     onRegisterAsDriverClick: () -> Unit = {},
     onLoginClick: () -> Unit = {}
 ) {
     Scaffold(
-        containerColor = CovyBackground2,
+        // ✅ MaterialTheme au lieu de CovyBackground2
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBarCovy(
                 stepText = "03 / 30",
@@ -78,9 +70,9 @@ fun DriverProfileSelectionScreen(
                     text = "Déjà inscrit ? Se connecter",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = CovyForestGreen2,
+                    // ✅ MaterialTheme.primary au lieu de CovyForestGreen2
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
-                        // ✅ Utilise le ViewModel pour se connecter
                         .clickable {
                             viewModel.seConnecter {
                                 onLoginClick()
@@ -99,46 +91,54 @@ fun DriverProfileSelectionScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Badge "INSCRIPTION · PROFIL"
             Text(
                 text = "INSCRIPTION · PROFIL",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = CovyBadgeTextGreen2,
+                // ✅ secondary au lieu de CovyBadgeTextGreen2
+                color = MaterialTheme.colorScheme.secondary,
                 letterSpacing = 0.5.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Titre principal
             Text(
                 text = "Vous êtes chauffeur Covy ?",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = CovyTextDark2,
+                // ✅ onBackground au lieu de CovyTextDark2
+                color = MaterialTheme.colorScheme.onBackground,
                 lineHeight = 34.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Sous-titre
             Text(
                 text = "Ce parcours est réservé aux chauffeurs Covy. Créez votre compte pour transporter des passagers.",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
-                color = CovyTextMuted2,
+                // ✅ onSurfaceVariant au lieu de CovyTextMuted2
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 21.sp
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Carte "Chauffeur"
             Surface(
-                // ✅ Utilise le ViewModel pour confirmer le profil
                 onClick = {
                     viewModel.confirmerProfilChauffeur {
                         onRegisterAsDriverClick()
                     }
                 },
                 shape = RoundedCornerShape(24.dp),
-                color = Color.White,
-                border = androidx.compose.foundation.BorderStroke(1.dp, CovyBorderCard2),
+                // ✅ surface au lieu de Color.White
+                color = MaterialTheme.colorScheme.surface,
+                // ✅ outline au lieu de CovyBorderCard2
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 shadowElevation = 0.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -147,17 +147,20 @@ fun DriverProfileSelectionScreen(
                         .fillMaxWidth()
                         .padding(24.dp)
                 ) {
+                    // Icône dans un carré vert clair
                     Box(
                         modifier = Modifier
                             .size(56.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(CovyLightGreenBg2),
+                            // ✅ primaryContainer au lieu de CovyLightGreenBg2
+                            .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.DirectionsCar,
                             contentDescription = "Chauffeur",
-                            tint = CovyForestGreen2,
+                            // ✅ primary au lieu de CovyForestGreen2
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -168,7 +171,8 @@ fun DriverProfileSelectionScreen(
                         text = "Chauffeur",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = CovyTextDark2
+                        // ✅ onSurface au lieu de CovyTextDark2
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -176,7 +180,8 @@ fun DriverProfileSelectionScreen(
                     Text(
                         text = "Je transporte des passagers vers leurs campus.",
                         fontSize = 14.sp,
-                        color = CovyTextMuted2,
+                        // ✅ onSurfaceVariant au lieu de CovyTextMuted2
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 20.sp
                     )
 
@@ -187,13 +192,15 @@ fun DriverProfileSelectionScreen(
                             text = "M'inscrire comme chauffeur",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = CovyForestGreen2
+
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = null,
-                            tint = CovyForestGreen2,
+
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -224,38 +231,45 @@ fun TopAppBarCovy(stepText: String, onBackClicked: () -> Unit) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Retour",
-                tint = CovyTextDark2
+                // ✅ onBackground au lieu de CovyTextDark2
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(CovyLightGreenBg2),
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🌱", fontSize = 16.sp)
+                Image(
+                    painter = painterResource(id = R.drawable.covy_logo),
+                    contentDescription = "Logo Covy",
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Covy",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = CovyForestGreen2
+                // ✅ primary au lieu de CovyForestGreen2
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
         Surface(
-            color = Color(0xFFF3F4F6),
+            // ✅ surfaceVariant au lieu de Color(0xFFF3F4F6)
+            color = MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
                 text = stepText,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = CovyTextMuted2,
+                // ✅ onSurfaceVariant au lieu de CovyTextMuted2
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
             )
         }
@@ -265,5 +279,7 @@ fun TopAppBarCovy(stepText: String, onBackClicked: () -> Unit) {
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 fun PreviewDriverProfileSelectionScreen() {
-    DriverProfileSelectionScreen()
+    CovyTheme {
+        DriverProfileSelectionScreen()
+    }
 }
