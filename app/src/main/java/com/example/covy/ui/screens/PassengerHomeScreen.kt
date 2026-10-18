@@ -1,5 +1,5 @@
-package com.example.covy.ui.screens
 
+package com.example.covy.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -55,21 +55,36 @@ fun PassengerHomeScreen(
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    "ESPACE PASSAGER",
+                    text = "ESPACE PASSAGER",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Text("Bonjour $userName", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+
                 Text(
-                    "Où allez-vous aujourd'hui ?",
+                    text = "Bonjour $userName",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "Où allez-vous aujourd'hui ?",
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                CovyChip("Maintenant", selected = nowSelected, onClick = { nowSelected = true })
-                CovyChip("Planifier", selected = !nowSelected, onClick = { nowSelected = false })
+                CovyChip(
+                    "Maintenant",
+                    selected = nowSelected,
+                    onClick = { nowSelected = true }
+                )
+
+                CovyChip(
+                    "Planifier",
+                    selected = !nowSelected,
+                    onClick = { nowSelected = false }
+                )
             }
 
             CovyTextField(
@@ -77,18 +92,32 @@ fun PassengerHomeScreen(
                 value = departure,
                 onValueChange = { departure = it },
                 placeholder = "Ex. St-Jean, Cocody",
-                trailingIcon = { Icon(Icons.Outlined.LocationOn, contentDescription = null) }
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.LocationOn,
+                        contentDescription = "Lieu de départ"
+                    )
+                }
             )
+
             CovyTextField(
                 label = "Destination campus",
                 value = destination,
                 onValueChange = { destination = it },
                 placeholder = "Ex. Campus Bingerville",
-                trailingIcon = { Icon(Icons.Outlined.School, contentDescription = null) }
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.School,
+                        contentDescription = "Campus de destination"
+                    )
+                }
             )
 
             if (upcomingTrip != null) {
-                CovyTripCard(trip = upcomingTrip, onOpenTicket = onOpenTicket)
+                CovyTripCard(
+                    trip = upcomingTrip,
+                    onOpenTicket = onOpenTicket
+                )
             }
 
             CovyInfoCard(
@@ -99,21 +128,26 @@ fun PassengerHomeScreen(
         }
 
         Button(
-            onClick = { onFindTrip(departure, destination) },
+            onClick = {
+                onFindTrip(departure.trim(), destination.trim())
+            },
             enabled = departure.isNotBlank() && destination.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 16.dp)
                 .height(56.dp)
         ) {
-            Text("Trouver un trajet", fontWeight = FontWeight.SemiBold)
+            Text(
+                text = "Trouver un trajet",
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
         CovyBottomBar(
             selected = selectedTab,
-            onSelect = {
-                selectedTab = it
-                onTabSelected(it)
+            onSelect = { tab ->
+                selectedTab = tab
+                onTabSelected(tab)
             }
         )
     }
@@ -131,7 +165,10 @@ private fun PassengerHomeScreenPreview() {
                 price = "1 500 F",
                 driverInfo = "Karim Kouassi · 1 place"
             ),
-            onBack = {}, onFindTrip = { _, _ -> }, onOpenTicket = {}, onTabSelected = {}
+            onBack = {},
+            onFindTrip = { _, _ -> },
+            onOpenTicket = {},
+            onTabSelected = {}
         )
     }
 }
