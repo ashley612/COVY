@@ -1,5 +1,7 @@
 package com.example.covy.UiChauffeur
 
+
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.covy.models.DashboardUiState
+import com.example.covy.models.GroupOpportunity
 import com.example.covy.ui.theme.*
 import com.example.covy.ui.theme.CovyColors.BackgroundGray
 import com.example.covy.ui.theme.CovyColors.CovyDarkGreen
@@ -40,10 +43,27 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun DashboardChauffeur(viewModel: DashboardViewModel = viewModel(),
-                       onNavigateToGroupRide: () -> Unit) {
+fun DashboardChauffeur(
+    viewModel: DashboardViewModel = viewModel(),
+    onNavigateToGroupRide: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DashboardChauffeurContent(
+        uiState = uiState,
+        onToggleOnlineStatus = viewModel::onToggleOnlineStatus,
+        onViewGroupRideClick = {
+            viewModel.onViewGroupRideClick()
+            onNavigateToGroupRide()
+        }
+    )
+}
 
+@Composable
+fun DashboardChauffeurContent(
+    uiState: DashboardUiState,
+    onToggleOnlineStatus: (Boolean) -> Unit,
+    onViewGroupRideClick: () -> Unit
+) {
     Scaffold(
         containerColor = BackgroundGray,
         bottomBar = {
@@ -88,7 +108,7 @@ fun DashboardChauffeur(viewModel: DashboardViewModel = viewModel(),
                             // Statut En ligne
                             StatusCard(
                                 isOnline = uiState.isOnline,
-                                onToggle = viewModel::onToggleOnlineStatus
+                                onToggle = onToggleOnlineStatus
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -128,7 +148,7 @@ fun DashboardChauffeur(viewModel: DashboardViewModel = viewModel(),
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
                     Button(
-                        onClick = onNavigateToGroupRide,
+                        onClick = onViewGroupRideClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -451,6 +471,26 @@ fun CovyBottomNavigationBarDashboard() {
                 unselectedIconColor = TextTertiary,
                 unselectedTextColor = TextTertiary
             )
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+fun DashboardChauffeurPreview() {
+    CovyTheme {
+        DashboardChauffeurContent(
+            uiState = DashboardUiState(
+                opportunity = GroupOpportunity(
+                    price = 6000,
+                    seats = 4,
+                    pricePerSeat = 1500,
+                    route = "Riviera 2 > St-Jean > Angré > Campus Bingerville",
+                    estimatedTime = "35 min estimées"
+                )
+            ),
+            onToggleOnlineStatus = {},
+            onViewGroupRideClick = {}
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.covy.UiChauffeur
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,11 +10,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Security
@@ -25,13 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.covy.models.AccountUiState
 import com.example.covy.models.DriverDocument
 import com.example.covy.models.DriverProfile
 import com.example.covy.models.SubscriptionInfo
@@ -50,16 +48,46 @@ import java.util.Locale
 
 @Composable
 fun AccountScreen(
-                viewModel: AccountViewModel = viewModel(),
-
-                  onNavigateToDocumentDetail: (String) -> Unit,
-                  onNavigateToSubscription: () -> Unit,
-                  onNavigateToSupport: () -> Unit,
-                  onNavigateToAuth: () -> Unit,
-                  onNavigateBack: () -> Unit
+    viewModel: AccountViewModel = viewModel(),
+    onNavigateToDocumentDetail: (String) -> Unit,
+    onNavigateToSubscription: () -> Unit,
+    onNavigateToSupport: () -> Unit,
+    onNavigateToAuth: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    AccountScreenContent(
+        isLoading = uiState.isLoading,
+        profile = uiState.profile,
+        documents = uiState.documents,
+        subscription = uiState.subscription,
+        onEditProfileClick = viewModel::onEditProfileClick,
+        onManageSubscriptionClick = viewModel::onManageSubscriptionClick,
+        onLogoutClick = viewModel::onLogoutClick,
+        onNavigateToDocumentDetail = onNavigateToDocumentDetail,
+        onNavigateToSubscription = onNavigateToSubscription,
+        onNavigateToSupport = onNavigateToSupport,
+        onNavigateToAuth = onNavigateToAuth,
+        onNavigateBack = onNavigateBack
+    )
+}
+
+@Composable
+fun AccountScreenContent(
+    isLoading: Boolean,
+    profile: DriverProfile?,
+    documents: List<DriverDocument>,
+    subscription: SubscriptionInfo?,
+    onEditProfileClick: () -> Unit,
+    onManageSubscriptionClick: () -> Unit,
+    onLogoutClick: () -> Unit,
+    onNavigateToDocumentDetail: (String) -> Unit,
+    onNavigateToSubscription: () -> Unit,
+    onNavigateToSupport: () -> Unit,
+    onNavigateToAuth: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
         containerColor = BackgroundGray,
         bottomBar = {
@@ -71,7 +99,7 @@ fun AccountScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (uiState.isLoading) {
+            if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = CovyDarkGreen)
                 }
@@ -80,7 +108,7 @@ fun AccountScreen(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(bottom = 24.dp)
                 ) {
-                    item { TopAppBarAccount() }
+                    item { TopAppBarAccount(onBackClick = onNavigateBack) }
 
                     item {
                         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -102,23 +130,34 @@ fun AccountScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // Profil
-                            uiState.profile?.let { ProfileCard(it, viewModel::onEditProfileClick) }
+                            profile?.let { ProfileCard(it, onEditProfileClick) }
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // Documents
-                            DocumentsCard(uiState.documents)
+                            DocumentsCard(documents,
+                                onDocumentClick = onNavigateToDocumentDetail
+                            )
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // Abonnement
-                            uiState.subscription?.let { SubscriptionCard(it, viewModel::onManageSubscriptionClick) }
+                            subscription?.let { sub ->
+                                SubscriptionCard(
+                                    subscription = sub,
+                                    onManageClick = {
+                                        onManageSubscriptionClick()
+                                        onNavigateToSubscription()
+                                    }
+                                )
+                            }
                             Spacer(modifier = Modifier.height(24.dp))
 
                             // Liens du bas
                             FooterLinks(
                                 onNavigateToAuth = {
-                                    viewModel.onLogoutClick()
+                                    onLogoutClick()
                                     onNavigateToAuth()
-                                }
+                                },
+                                onNavigateToSupport = onNavigateToSupport
                             )
                                 }
 
@@ -131,7 +170,7 @@ fun AccountScreen(
 
 
 @Composable
-fun TopAppBarAccount() {
+fun TopAppBarAccount(onBackClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,6 +182,7 @@ fun TopAppBarAccount() {
             contentDescription = "Retour",
             tint = TextSecondary,
             modifier = Modifier.size(24.dp)
+                .clickable { onBackClick() }
         )
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -255,7 +295,9 @@ fun ProfileCard(profile: DriverProfile, onEditClick: () -> Unit) {
 }
 
 @Composable
-fun DocumentsCard(documents: List<DriverDocument>) {
+fun DocumentsCard(documents: List<DriverDocument>,
+                  onDocumentClick: (String) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -272,17 +314,22 @@ fun DocumentsCard(documents: List<DriverDocument>) {
             )
 
             documents.forEach { doc ->
-                DocumentItem(doc)
+                DocumentItem(doc,
+                    onClick = { onDocumentClick(doc.title)}
+                )
             }
         }
     }
 }
 
 @Composable
-fun DocumentItem(doc: DriverDocument) {
+fun DocumentItem(doc: DriverDocument,
+                 onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -396,12 +443,13 @@ fun SubscriptionCard(subscription: SubscriptionInfo, onManageClick: () -> Unit) 
 
 @Composable
 fun FooterLinks(
+                onNavigateToSupport: () -> Unit,
                 onNavigateToAuth: () -> Unit) {
     Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { /* Action aide */ }
+                .clickable { onNavigateToAuth() }
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -416,7 +464,7 @@ fun FooterLinks(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onNavigateToAuth() }
+                .clickable { onNavigateToSupport() }
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -488,6 +536,41 @@ fun CovyBottomNavigationBarAccount() {
             colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.Transparent
             )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AccountScreenPreview() {
+    CovyTheme {
+        AccountScreenContent(
+            isLoading = false,
+            profile = DriverProfile(
+                name = "Karim Kouassi",
+                carModel = "Toyota Corolla blanche",
+                rating = 4.8,
+                plateNumber = "AB 1234 CD",
+                fullDescription = "Toyota Corolla 2021 · Blanche · AB 1234 CD"
+            ),
+            documents = listOf(
+                DriverDocument("Permis de conduire", "Catégorie B"),
+                DriverDocument("Assurance", "Document du véhicule"),
+                DriverDocument("Visite technique", "Justificatif enregistré")
+            ),
+            subscription = SubscriptionInfo(
+                planName = "Pass Campus Mensuel",
+                price = 25000,
+                renewalDate = "15 octobre 2026"
+            ),
+            onEditProfileClick = {},
+            onManageSubscriptionClick = {},
+            onLogoutClick = {},
+            onNavigateToDocumentDetail = {},
+            onNavigateToSubscription = {},
+            onNavigateToSupport = {},
+            onNavigateToAuth = {},
+            onNavigateBack = {}
         )
     }
 }
