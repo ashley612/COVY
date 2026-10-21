@@ -1,4 +1,5 @@
 plugins {
+
     kotlin("plugin.serialization") version "2.0.21"
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -37,8 +38,13 @@ android {
 }
 
 dependencies {
-
-
+    implementation("androidx.compose.material3:material3")
+        implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate) // (ou version équivalente)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation(libs.androidx.compose.foundation)
