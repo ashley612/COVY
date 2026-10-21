@@ -10,6 +10,21 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import com.example.covy.ui.theme.CovyColors.CovyBackground
+import com.example.covy.ui.theme.CovyColors.CovyBackgroundDark
+import com.example.covy.ui.theme.CovyColors.CovyBadgeTextGreen
+import com.example.covy.ui.theme.CovyColors.CovyBorderCard
+import com.example.covy.ui.theme.CovyColors.CovyBorderGreen
+import com.example.covy.ui.theme.CovyColors.CovyErrorRed
+import com.example.covy.ui.theme.CovyColors.CovyForestGreen
+import com.example.covy.ui.theme.CovyColors.CovyForestGreenDark
+import com.example.covy.ui.theme.CovyColors.CovyInputBg
+import com.example.covy.ui.theme.CovyColors.CovyLightGreenBg
+import com.example.covy.ui.theme.CovyColors.CovyTextDark
+import com.example.covy.ui.theme.CovyColors.CovyTextDarkDark
+import com.example.covy.ui.theme.CovyColors.CovyTextMuted
+import com.example.covy.ui.theme.CovyColors.CovyTextMutedDark
+
 // ==========================================
 // COLOR SCHEME COVY - MODE CLAIR
 // ==========================================
