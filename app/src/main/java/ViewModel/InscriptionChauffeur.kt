@@ -5,8 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.covy.model.DocumentType
-
+import com.example.covy.model.Validation
 class InscriptionViewModel : ViewModel() {
+
+    // Passe à true quand l'écran de code SMS (OTP) sera en place
+    private val exigerTelephoneVerifie = false
 
     // ====== Champs du formulaire ======
     var firstName by mutableStateOf("")
@@ -15,10 +18,21 @@ class InscriptionViewModel : ViewModel() {
     var lastName by mutableStateOf("")
         private set
 
+    /** Date de naissance : 8 chiffres JJMMAAAA */
+    var birthDate by mutableStateOf("")
+        private set
+
+    /** Numéro ivoirien à 10 chiffres, sans +225 */
     var phone by mutableStateOf("")
         private set
 
+    var isPhoneVerified by mutableStateOf(false)
+        private set
+
     var password by mutableStateOf("")
+        private set
+
+    var photoUri by mutableStateOf<String?>(null)
         private set
 
     var selectedDocType by mutableStateOf(DocumentType.CNI)
@@ -42,22 +56,38 @@ class InscriptionViewModel : ViewModel() {
 
     // ====== Actions sur les champs ======
     fun onFirstNameChange(value: String) {
-        firstName = value
+        firstName = Validation.cleanName(value)   // les chiffres sont ignorés
         errorMessage = null
     }
 
     fun onLastNameChange(value: String) {
-        lastName = value
+        lastName = Validation.cleanName(value)
+        errorMessage = null
+    }
+
+    fun onBirthDateChange(value: String) {
+        birthDate = Validation.cleanBirthDate(value)
         errorMessage = null
     }
 
     fun onPhoneChange(value: String) {
-        phone = value
+        phone = Validation.cleanPhone(value)
+        isPhoneVerified = false                    // si le numéro change, il faut reconfirmer
         errorMessage = null
+    }
+
+    /** À appeler quand le code SMS saisi est validé par le serveur. */
+    fun onPhoneVerified() {
+        isPhoneVerified = true
     }
 
     fun onPasswordChange(value: String) {
         password = value
+        errorMessage = null
+    }
+
+    fun onPhotoPicked(uri: String?) {
+        photoUri = uri
         errorMessage = null
     }
 
@@ -81,36 +111,40 @@ class InscriptionViewModel : ViewModel() {
         errorMessage = null
     }
 
-    // ====== Action : soumettre le formulaire ======
+    // ====== Étape 1 : Identité ======
+    /** @return true si l'étape 1 est valide, sinon remplit errorMessage. */
+    fun validerIdentite(): Boolean {
+        errorMessage = when {
+            !Validation.isValidName(firstName) ->
+                "Le prénom est obligatoire (lettres uniquement)"
+            !Validation.isValidName(lastName) ->
+                "Le nom est obligatoire (lettres uniquement)"
+            !Validation.isValidBirthDate(birthDate) ->
+                "Date de naissance invalide (${Validation.MIN_AGE_CHAUFFEUR} ans minimum)"
+            !Validation.isValidCiPhone(phone) ->
+                "Numéro ivoirien invalide (ex : 07 88 12 34 56)"
+            exigerTelephoneVerifie && !isPhoneVerified ->
+                "Confirmez votre numéro avec le code reçu par SMS"
+            password.length < Validation.MIN_PASSWORD_LENGTH ->
+                "Le mot de passe doit contenir au moins ${Validation.MIN_PASSWORD_LENGTH} caractères"
+            else -> null
+        }
+        return errorMessage == null
+    }
+
+    // ====== Étape 2 : Documents, puis suite vers le véhicule ======
     fun continuerVersVehicule(onSuccess: () -> Unit) {
-        // Validation
-        if (firstName.isBlank()) {
-            errorMessage = "Le prénom est obligatoire"
-            return
+        // On revérifie l'identité par sécurité
+        if (!validerIdentite()) return
+
+        errorMessage = when {
+            docNumber.isBlank() -> "Le numéro du document est obligatoire"
+            licenseNumber.isBlank() -> "Le numéro du permis est obligatoire"
+            else -> null
         }
-        if (lastName.isBlank()) {
-            errorMessage = "Le nom est obligatoire"
-            return
-        }
-        if (phone.isBlank()) {
-            errorMessage = "Le téléphone est obligatoire"
-            return
-        }
-        if (password.length < 6) {
-            errorMessage = "Le mot de passe doit contenir au moins 6 caractères"
-            return
-        }
-        if (docNumber.isBlank()) {
-            errorMessage = "Le numéro du document est obligatoire"
-            return
-        }
-        if (licenseNumber.isBlank()) {
-            errorMessage = "Le numéro du permis est obligatoire"
-            return
-        }
+        if (errorMessage != null) return
 
         isLoading = true
-        errorMessage = null
 
         // TODO: appel API plus tard (POST /driver/register)
         // Pour l'instant, simulation

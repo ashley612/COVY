@@ -6,6 +6,14 @@ import kotlinx.serialization.Serializable
 // =========================================================================================
 // 1. DESTINATIONS TYPE-SAFE (kotlinx.serialization)
 // =========================================================================================
+@Serializable
+object RouteChoixProfil
+
+@Serializable
+object RoutePassagerAccueil
+
+@Serializable
+object RouteBienvenue          // WelcomeCampusScreen (01 / 30)
 
 // --- Authentification & onboarding chauffeur ---
 @Serializable object RouteBienvenue          // WelcomeCampusScreen (01 / 30)
@@ -26,5 +34,37 @@ import kotlinx.serialization.Serializable
 @Serializable object RouteCourseEnCours   // L'écran de navigation pendant la course
 @Serializable object RoutePortefeuille    // L'écran des revenus
 @Serializable object RouteCompte          // L'écran du profil chauffeur
+@Serializable
+object RouteProfilChauffeur      // DriverProfileSelectionScreen (03 / 30)
 
 
+@Serializable
+object RouteVehicule           // VehicleAndDocumentsScreen (13 / 30)
+
+
+@Serializable
+object RouteRechercheTrajet
+
+@Serializable
+object RouteResultatsTrajets
+
+@Serializable
+object RouteDetailsTrajet
+
+@Serializable
+object RouteMesTrajets
+
+@Serializable
+object RouteNotifications
+
+@Serializable
+object RouteProfilPassager
+
+@Serializable
+object RoutePaiement
+
+@Serializable
+object RouteBillet
+
+@Serializable
+object RouteSuivi
